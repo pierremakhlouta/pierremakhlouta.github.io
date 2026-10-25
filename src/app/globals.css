@@ -1,26 +1,356 @@
 @import "tailwindcss";
 
+/* Palette: cool mineral paper, blue-black ink, cobalt for links, focus and
+   anything "online". Green is reserved for live / healthy states. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #ebeef0;
+  --surface: #f6f7f8;
+  --ink: #15212c;
+  --muted: #485662;
+  --rule: #c3cad1;
+  --accent: #2747e0;
+  --ok: #1a7a4d;
+  --ok-soft: #d3eadf;
+  --dot: rgb(21 33 44 / 0.1);
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #121b23;
+    --surface: #18232d;
+    --ink: #dde4e9;
+    --muted: #a3b0bb;
+    --rule: #2f3e4a;
+    --accent: #93a6ff;
+    --ok: #4cc38a;
+    --ok-soft: #173a2b;
+    --dot: rgb(221 228 233 / 0.08);
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  /* Page width (max-w-page). With the 17px desktop rem and lg padding this
+     leaves about 1,310px of content; long text keeps its own ch-based caps. */
+  --container-page: 82rem;
+
+  /* Type scale. rem is 16px on phones and 17px from md up, so the whole
+     scale grows together: body 17 -> 18px, captions 15 -> 16px. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.45;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.875rem;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 2.375rem;
+  --text-3xl--line-height: 1.1;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.04;
+}
+
+html {
+  font-size: 100%;
+  scroll-padding-top: 5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 106.25%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Inline text links: underline that tightens on hover. */
+.link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: text-underline-offset 150ms ease;
+}
+.link:hover {
+  text-underline-offset: 0.12em;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Topology canvas: a faint dot grid behind maps. */
+.dot-grid {
+  background-image: radial-gradient(var(--dot) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+}
+
+.dot-grid-fade {
+  mask-image: radial-gradient(closest-side, #000 72%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   The signal path. Every page runs down one vertical trace; section headings
+   sit on it as nodes that come online as the reader reaches them.
+   --------------------------------------------------------------------------- */
+.trace {
+  --trace-pad: 1.875rem;
+  position: relative;
+  padding-left: var(--trace-pad);
+}
+@media (min-width: 768px) {
+  .trace {
+    --trace-pad: 3rem;
+  }
+}
+.trace::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--rule);
+}
+.trace-bare::before {
+  display: none;
+}
+.trace-start::before {
+  top: var(--trace-start, 0.6em);
+}
+.trace-end::before {
+  bottom: auto;
+  height: var(--trace-end, 2rem);
+}
+
+/* The node marker sits on the trace, aligned with the first line of its
+   heading. It travels with sticky headings, riding the line while you read. */
+.node {
+  position: absolute;
+  left: calc(-1 * var(--trace-pad));
+  top: calc(0.55em - 7.5px);
+  width: 15px;
+  height: 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--muted);
+  background: var(--paper);
+  transition:
+    background-color 400ms ease,
+    border-color 400ms ease,
+    box-shadow 600ms ease;
+}
+.node[data-online] {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.node-square {
+  border-radius: 3px;
+}
+
+/* Where the browser supports scroll-driven animation, the trace fills with
+   colour as each section scrolls past: the signal moving down the page. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .trace-fill::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--accent);
+      transform-origin: top;
+      animation: trace-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 60%;
+    }
+  }
+}
+@keyframes trace-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* Elements revealed on first view. Hidden only once JS has armed the
+   observer, so the page reads fine without scripts. */
+html[data-armed] [data-reveal]:not([data-online]) {
+  opacity: 0;
+  transform: translateY(10px);
+}
+[data-reveal] {
+  transition:
+    opacity 600ms ease,
+    transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--delay, 0ms);
+}
+
+/* Each page fades in on navigation (app/template.tsx remounts per route). */
+.page-enter {
+  animation: page-in 380ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Topology map (homepage). Edges draw out from the centre on load, nodes come
+   online as their edge arrives; hovering a node sends a signal along its path.
+   --------------------------------------------------------------------------- */
+/* Stroke widths are in map units (the canvas is 100 units wide). */
+.map-edge {
+  stroke: var(--muted);
+  stroke-opacity: 0.45;
+  stroke-width: 0.28;
+  fill: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: edge-draw 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--d, 0ms);
+  transition: stroke 200ms ease;
+}
+.map-edge[data-active] {
+  stroke: var(--accent);
+  stroke-opacity: 1;
+}
+.map-signal {
+  stroke: var(--accent);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  fill: none;
+  stroke-dasharray: 0.08 1;
+  stroke-dashoffset: 1.08;
+  opacity: 0;
+}
+.map-signal[data-active] {
+  opacity: 1;
+  animation: signal 1.1s linear infinite;
+}
+.map-node {
+  opacity: 0;
+  animation: node-on 500ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes edge-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes signal {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes node-on {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Dropdown panel */
+.menu-panel {
+  animation: menu-in 140ms ease-out both;
+  transform-origin: top left;
+}
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+  }
+  .map-signal[data-active] {
+    animation: none;
+    opacity: 0;
+  }
+  html[data-armed] [data-reveal]:not([data-online]) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Direction route: the line draws along the stations when revealed. */
+.route-line {
+  transform-origin: left;
+  transition: transform 1100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+html[data-armed] .route:not([data-online]) .route-line {
+  transform: scaleX(0);
+}
+html[data-armed] .route[data-online] {
+  opacity: 1;
+  transform: none;
 }
