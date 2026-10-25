@@ -18,9 +18,9 @@ const jetbrains = JetBrains_Mono({
 const description =
   "Computer Science student at York University, drawn to systems, software and how technology works. Projects, experience, skills and contact details.";
 
-// Absolute base for share-image URLs. SITE_URL overrides it (e.g. a custom
-// domain); BASE_PATH is appended for sub-path hosting.
-const siteUrl = `${process.env.SITE_URL ?? "https://pierremakhlouta.github.io"}${process.env.BASE_PATH ?? ""}`;
+// Absolute origin for share-image URLs. SITE_URL overrides it (e.g. a custom
+// domain). Next.js adds BASE_PATH to these URLs itself, so it is not added here.
+const siteUrl = process.env.SITE_URL ?? "https://pierremakhlouta.github.io";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
