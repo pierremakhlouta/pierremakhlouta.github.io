@@ -12,6 +12,7 @@ type MapNode = {
   label: string;
   angle: number; // degrees, 0 = right, clockwise
   narrowAngle?: number; // override on the phone layout, where space is tighter
+  narrowLabel?: string; // shorter label on the phone layout
   ring: 1 | 2;
   parent?: string;
   href?: string;
@@ -36,9 +37,10 @@ const nodes: MapNode[] = [
   { id: "k8s", label: "Kubernetes", angle: 62, narrowAngle: 64, ring: 2, parent: "skills", href: "/skills/#containers-and-orchestration" },
   { id: "contact", label: "Contact", angle: 90, ring: 1, href: "/contact/" },
   { id: "certifications", label: "Certifications", angle: 150, ring: 1, href: "/experience/#certifications" },
-  { id: "automation", label: "IT Automation", angle: 156, ring: 2, parent: "certifications", href: "/experience/#cert-it-automation" },
-  { id: "lfca", label: "Linux for LFCA", angle: 136, ring: 2, parent: "certifications", href: "/experience/#cert-lfca" },
-  { id: "ictc", label: "Focus on IT (ICTC)", angle: 116, ring: 2, parent: "certifications", href: "/experience/#cert-ictc" },
+  { id: "m365", label: "Microsoft 365", angle: 160, ring: 2, parent: "certifications", href: "/experience/#cert-microsoft-365" },
+  { id: "automation", label: "IT Automation", angle: 144, narrowAngle: 146, ring: 2, parent: "certifications", href: "/experience/#cert-it-automation" },
+  { id: "lfca", label: "Linux for LFCA", angle: 128, narrowAngle: 130, ring: 2, parent: "certifications", href: "/experience/#cert-lfca" },
+  { id: "ictc", label: "Focus on IT (ICTC)", narrowLabel: "FIT (ICTC)", angle: 112, narrowAngle: 108, ring: 2, parent: "certifications", href: "/experience/#cert-ictc" },
 ];
 
 // `aspect` is the canvas width / height, so the SVG can share its proportions
@@ -160,7 +162,7 @@ function Canvas({ layout, active, setActive }: { layout: Layout; active: string 
               on ? "text-accent" : hub ? "text-ink" : "text-muted"
             } ${n.href ? "decoration-accent decoration-2 underline-offset-4 group-hover:underline group-focus-visible:underline" : ""}`}
           >
-            {n.label}
+            {layout === layouts.narrow && n.narrowLabel ? n.narrowLabel : n.label}
           </span>
         );
         const style = { left: `${p.x}%`, top: `${p.y}%`, "--d": `${delay}ms` } as React.CSSProperties;

@@ -89,13 +89,13 @@ export default function ExperiencePage() {
       </Section>
 
       <Section id="certifications" title="Certifications">
-        <ul className="grid gap-5 lg:grid-cols-3">
+        <ul className="grid gap-5 sm:grid-cols-2">
           {certifications.map((c) => (
             <li key={c.id} id={c.id} className="flex flex-col rounded-lg border border-rule bg-surface p-5">
               {c.image && (
                 <Gallery
                   shots={[{ src: c.image.src, alt: c.image.alt, caption: `${c.name}, ${c.issuer}`, frame: "document" }]}
-                  sizes="(min-width: 1024px) 300px, 100vw"
+                  sizes="(min-width: 1024px) 460px, (min-width: 640px) 50vw, 100vw"
                   className="mb-5"
                   showCaption={false}
                 />

@@ -59,7 +59,7 @@ Screenshots live in `src/assets/` as WebP and are imported statically, so Next.j
 | --- | --- |
 | `src/assets/psells/` | Captured from the public demo (invented records only), at 2x and cropped to 1600px wide. Screens showing the partner's cut (Inventory table, Price drops, item Edit) are deliberately left out. |
 | `src/assets/evenly/` | The README screenshots from the Evenly repo (`docs/screenshots/`), made from seed data. |
-| `src/assets/certificates/` | Real certificates only, rendered from the issuers' PDFs: `google-it-automation.webp` and `lfca-specialization.webp` (Coursera certificate PDFs, each with a Coursera verification link) and `ictc-fit.webp` (a scan of the printed ICTC FIT certificate; ICTC offers no online verification). The PDFs themselves are not published. To add another, render its PDF to a ~1600px WebP here and set `image` (and `verify`, if the issuer offers a verification URL) on its entry in `certifications` in `profile.ts`. |
+| `src/assets/certificates/` | Real certificates only, rendered from the issuers' PDFs: `microsoft-365-ab900.webp`, `google-it-automation.webp` and `lfca-specialization.webp` (Coursera certificate PDFs, each with a Coursera verification link) and `ictc-fit.webp` (a scan of the printed ICTC FIT certificate; ICTC offers no online verification). The PDFs themselves are not published. To add another, render its PDF to a ~1600px WebP here (Quick Look, `qlmanage -t -s 2400`, keeps the page orientation; flatten onto white) and add an entry to `certifications` in `profile.ts`, plus a leaf in `TopologyMap.tsx`. |
 
 To add a screenshot: save a WebP (about 1600px wide for browser views, the native ~786px for phone views), import it in `projects.ts` and add it to the project's `hero` or `gallery`.
 

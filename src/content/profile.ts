@@ -7,6 +7,7 @@ import type { StaticImageData } from "next/image";
 import googleItAutomationCertificate from "@/assets/certificates/google-it-automation.webp";
 import ictcFitCertificate from "@/assets/certificates/ictc-fit.webp";
 import lfcaSpecializationCertificate from "@/assets/certificates/lfca-specialization.webp";
+import microsoft365Certificate from "@/assets/certificates/microsoft-365-ab900.webp";
 
 export const person = {
   name: "Pierre Makhlouta",
@@ -65,6 +66,12 @@ export const skills: SkillGroup[] = [
     name: "Databases and data",
     items: ["PostgreSQL", "SQLite", "Supabase", "pg_cron", "Star-schema warehousing", "ETL", "pandas", "Excel Power Query", "Power BI"],
     where: ["PSells", "Evenly", "S&C Electric"],
+  },
+  {
+    name: "Microsoft 365 administration",
+    items: ["Microsoft 365", "Exchange", "SharePoint", "Teams", "Entra ID", "Conditional Access", "Privileged Identity Management", "Microsoft Purview (DLP, sensitivity labels)", "Power Platform"],
+    where: ["Coursework"],
+    note: "Microsoft 365 and Agent Administration AB-900 coursework",
   },
   {
     name: "Security",
@@ -254,6 +261,21 @@ export type Credential = {
 };
 
 export const certifications: Credential[] = [
+  {
+    id: "cert-microsoft-365",
+    name: "Microsoft 365 and Agent Administration AB-900 Professional Certificate",
+    issuer: "Microsoft",
+    date: "Oct 2026",
+    // The certificate PDF says "Professional Certificate" (Coursera's page calls it a Specialization).
+    kind: "Professional Certificate",
+    // AB-900 is also the code of Microsoft's own certification exam, which this is not.
+    note: "A five-course Coursera program from Microsoft covering AB-900 topics. It is separate from Microsoft's AB-900 certification exam.",
+    verify: { href: "https://coursera.org/verify/professional-cert/N7XAOPWP0V3R", label: "Verify on Coursera" },
+    image: {
+      src: microsoft365Certificate,
+      alt: "Certificate stating that Pierre Makhlouta completed the online Professional Certificate Microsoft 365 and Agent Administration AB-900, five courses from Microsoft, on Oct 26, 2026, issued through Coursera.",
+    },
+  },
   {
     id: "cert-it-automation",
     name: "Google IT Automation with Python Professional Certificate",
