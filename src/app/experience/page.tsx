@@ -111,7 +111,8 @@ export default function ExperiencePage() {
                     <p className="mt-1.5 text-muted">
                       {c.issuer}, {c.date}
                     </p>
-                    {c.note && <p className="mt-3 text-sm text-muted">{c.note}</p>}
+                    {c.summary && <p className="mt-3 max-w-[60ch] text-[0.9375rem] leading-relaxed text-muted">{c.summary}</p>}
+                    {c.note && <p className="mt-2 text-sm text-muted">{c.note}</p>}
                     {c.verify && (
                       <a href={c.verify.href} {...external} className="link mt-auto self-start pt-4 font-medium">
                         {c.verify.label}

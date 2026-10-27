@@ -269,6 +269,8 @@ export type Credential = {
   date: string;
   // What kind of credential this is, in the issuer's own terms.
   kind: string;
+  // What the program covers, from the certificate or the issuer's description.
+  summary?: string;
   note?: string;
   verify?: { href: string; label: string };
   // A real certificate image only; never a mock-up.
@@ -284,8 +286,9 @@ export const certifications: Credential[] = [
     date: "Oct 2026",
     // The certificate PDF says "Professional Certificate" (Coursera's page calls it a Specialization).
     kind: "Professional Certificate",
+    summary: "Covers Microsoft 365 administration, identity and security with Zero Trust principles, data governance and compliance in Microsoft Purview, and Copilot and Power Platform agent operations.",
     // AB-900 is also the code of Microsoft's own certification exam, which this is not.
-    note: "A five-course Coursera program from Microsoft covering AB-900 topics. It is separate from Microsoft's AB-900 certification exam.",
+    note: "A five-course Coursera program from Microsoft. It is separate from Microsoft's AB-900 certification exam.",
     verify: { href: "https://coursera.org/verify/professional-cert/N7XAOPWP0V3R", label: "Verify on Coursera" },
     image: {
       src: microsoft365Certificate,
@@ -299,6 +302,7 @@ export const certifications: Credential[] = [
     issuer: "Google",
     date: "Sep 2026",
     kind: "Professional Certificate",
+    summary: "Covers Python, Git and GitHub, troubleshooting and debugging, configuration management with Puppet, and automating work with APIs and cloud environments. Holders passed every graded assessment with at least 80%.",
     // From the certificate PDF issued through Coursera (Sep 28, 2026).
     verify: { href: "https://coursera.org/verify/professional-cert/6JBL8F5BUQ2D", label: "Verify on Coursera" },
     image: {
@@ -313,8 +317,9 @@ export const certifications: Credential[] = [
     issuer: "LearnQuest",
     date: "Jun 2026",
     kind: "Course specialization",
+    summary: "Four courses covering Linux and its major distributions, files and services, users, permissions, authentication and logging, plus cloud computing models, virtual machines, Git and DevOps.",
     // Completing the course series is not the same as passing the LFCA exam.
-    note: "A course series covering LFCA exam topics. It is separate from the Linux Foundation's LFCA certification exam.",
+    note: "A Coursera course series on LFCA exam topics. It is separate from the Linux Foundation's LFCA certification exam.",
     // From the specialization certificate PDF issued through Coursera (Jun 25, 2026).
     verify: { href: "https://coursera.org/verify/specialization/ASKS8C7UV9YN", label: "Verify on Coursera" },
     image: {
@@ -330,6 +335,7 @@ export const certifications: Credential[] = [
     date: "Jun 2024",
     // The certificate says "has completed the requirements of the FIT program".
     kind: "Program certificate",
+    summary: "Recognizes foundational software development knowledge from the ICTC program: programming, object-oriented design, web development, databases and development methodologies.",
     // Scan of the printed certificate (Jun 21, 2024). ICTC offers no online verification.
     image: {
       src: ictcFitCertificate,
