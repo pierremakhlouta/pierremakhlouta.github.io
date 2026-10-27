@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container, Section, Terminus } from "@/components/layout";
 import Attention from "@/components/Attention";
 import TopologyMap from "@/components/TopologyMap";
-import { person, principles } from "@/content/profile";
+import { certGroups, person, principles } from "@/content/profile";
 
 export default function Home() {
   return (
@@ -40,7 +40,7 @@ export default function Home() {
           </div>
 
           <figure>
-            <TopologyMap />
+            <TopologyMap certCategories={certGroups.map((g) => ({ id: g.id, label: g.label, short: g.mapShort }))} />
             <figcaption className="mt-4 text-center text-sm text-muted">
               A map of this site. Select a node to open that page.
             </figcaption>

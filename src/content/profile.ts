@@ -247,8 +247,23 @@ export const education = [
   },
 ];
 
+// Certificate categories, in display order. A category only appears on the
+// site (Experience page and homepage map) once it holds a completed
+// credential, so planned certificates are never shown before they are earned.
+// The homepage map has room for four category leaves; `mapShort` is the
+// one-line label used on phones.
+export const certCategories = [
+  { id: "cloud", label: "Cloud", mapShort: "Cloud" },
+  { id: "automation", label: "Automation and DevOps", mapShort: "DevOps" },
+  { id: "systems", label: "Linux and IT support", mapShort: "IT support" },
+  { id: "software", label: "Software development", mapShort: "Software" },
+] as const;
+
+export type CertCategoryId = (typeof certCategories)[number]["id"];
+
 export type Credential = {
   id: string;
+  category: CertCategoryId;
   name: string;
   issuer: string;
   date: string;
@@ -263,7 +278,8 @@ export type Credential = {
 export const certifications: Credential[] = [
   {
     id: "cert-microsoft-365",
-    name: "Microsoft 365 and Agent Administration AB-900 Professional Certificate",
+    category: "cloud",
+    name: "Microsoft 365 and Agent Administration AB‑900 Professional Certificate",
     issuer: "Microsoft",
     date: "Oct 2026",
     // The certificate PDF says "Professional Certificate" (Coursera's page calls it a Specialization).
@@ -278,6 +294,7 @@ export const certifications: Credential[] = [
   },
   {
     id: "cert-it-automation",
+    category: "automation",
     name: "Google IT Automation with Python Professional Certificate",
     issuer: "Google",
     date: "Sep 2026",
@@ -291,6 +308,7 @@ export const certifications: Credential[] = [
   },
   {
     id: "cert-lfca",
+    category: "systems",
     name: "Learning Linux for LFCA Certification Specialization",
     issuer: "LearnQuest",
     date: "Jun 2026",
@@ -306,6 +324,7 @@ export const certifications: Credential[] = [
   },
   {
     id: "cert-ictc",
+    category: "software",
     name: "Focus on Information Technology, Software Design and Development",
     issuer: "ICTC-CTIC",
     date: "Jun 2024",
@@ -318,3 +337,9 @@ export const certifications: Credential[] = [
     },
   },
 ];
+
+// Categories that hold at least one credential, each with its credentials
+// (newest first, as listed above).
+export const certGroups = certCategories
+  .map((c) => ({ ...c, items: certifications.filter((x) => x.category === c.id) }))
+  .filter((g) => g.items.length > 0);

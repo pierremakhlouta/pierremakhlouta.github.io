@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Gallery from "@/components/Gallery";
 import { Dash, PageHeader, Section, Terminus, external } from "@/components/layout";
-import { certifications, earlierWork, education, experience, leadership } from "@/content/profile";
+import { certGroups, earlierWork, education, experience, leadership } from "@/content/profile";
 
 export const metadata: Metadata = {
   title: "Experience and education",
@@ -89,32 +89,41 @@ export default function ExperiencePage() {
       </Section>
 
       <Section id="certifications" title="Certifications">
-        <ul className="grid gap-5 sm:grid-cols-2">
-          {certifications.map((c) => (
-            <li key={c.id} id={c.id} className="flex flex-col rounded-lg border border-rule bg-surface p-5">
-              {c.image && (
-                <Gallery
-                  shots={[{ src: c.image.src, alt: c.image.alt, caption: `${c.name}, ${c.issuer}`, frame: "document" }]}
-                  sizes="(min-width: 1024px) 460px, (min-width: 640px) 50vw, 100vw"
-                  className="mb-5"
-                  showCaption={false}
-                />
-              )}
-              <p className="text-sm text-muted">{c.kind}</p>
-              <h3 className="mt-1 text-lg font-semibold leading-snug tracking-tight">{c.name}</h3>
-              <p className="mt-1.5 text-muted">
-                {c.issuer}, {c.date}
-              </p>
-              {c.note && <p className="mt-3 text-sm text-muted">{c.note}</p>}
-              {c.verify && (
-                <a href={c.verify.href} {...external} className="link mt-auto self-start pt-4 font-medium">
-                  {c.verify.label}
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
-              )}
-            </li>
+        <div className="space-y-12">
+          {certGroups.map((g) => (
+            <section key={g.id} id={`certs-${g.id}`} aria-labelledby={`certs-${g.id}-title`}>
+              <h3 id={`certs-${g.id}-title`} className="text-xl font-semibold tracking-tight">
+                {g.label}
+              </h3>
+              <ul className="mt-5 grid gap-5 sm:grid-cols-2">
+                {g.items.map((c) => (
+                  <li key={c.id} id={c.id} className="flex flex-col rounded-lg border border-rule bg-surface p-5">
+                    {c.image && (
+                      <Gallery
+                        shots={[{ src: c.image.src, alt: c.image.alt, caption: `${c.name}, ${c.issuer}`, frame: "document" }]}
+                        sizes="(min-width: 1024px) 460px, (min-width: 640px) 50vw, 100vw"
+                        className="mb-5"
+                        showCaption={false}
+                      />
+                    )}
+                    <p className="text-sm text-muted">{c.kind}</p>
+                    <h4 className="mt-1 text-lg font-semibold leading-snug tracking-tight">{c.name}</h4>
+                    <p className="mt-1.5 text-muted">
+                      {c.issuer}, {c.date}
+                    </p>
+                    {c.note && <p className="mt-3 text-sm text-muted">{c.note}</p>}
+                    {c.verify && (
+                      <a href={c.verify.href} {...external} className="link mt-auto self-start pt-4 font-medium">
+                        {c.verify.label}
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
           ))}
-        </ul>
+        </div>
       </Section>
 
       <Section id="leadership" title="Leadership">

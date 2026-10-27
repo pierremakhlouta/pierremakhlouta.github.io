@@ -20,7 +20,7 @@ type MapNode = {
 
 // Every node links somewhere. Six hubs sit 60 degrees apart; leaves deep-link
 // into the page their hub opens (a project, a role, a skill row, a certificate).
-const nodes: MapNode[] = [
+const baseNodes: MapNode[] = [
   { id: "projects", label: "Projects", angle: -150, ring: 1, href: "/projects/" },
   { id: "psells", label: "PSells", angle: -174, ring: 2, parent: "projects", href: "/projects/psells/" },
   { id: "evenly", label: "Evenly", angle: -128, ring: 2, parent: "projects", href: "/projects/evenly/" },
@@ -37,10 +37,6 @@ const nodes: MapNode[] = [
   { id: "k8s", label: "Kubernetes", angle: 62, narrowAngle: 64, ring: 2, parent: "skills", href: "/skills/#containers-and-orchestration" },
   { id: "contact", label: "Contact", angle: 90, ring: 1, href: "/contact/" },
   { id: "certifications", label: "Certifications", angle: 150, ring: 1, href: "/experience/#certifications" },
-  { id: "m365", label: "Microsoft 365", angle: 160, ring: 2, parent: "certifications", href: "/experience/#cert-microsoft-365" },
-  { id: "automation", label: "IT Automation", angle: 144, narrowAngle: 146, ring: 2, parent: "certifications", href: "/experience/#cert-it-automation" },
-  { id: "lfca", label: "Linux for LFCA", angle: 128, narrowAngle: 130, ring: 2, parent: "certifications", href: "/experience/#cert-lfca" },
-  { id: "ictc", label: "Focus on IT (ICTC)", narrowLabel: "FIT (ICTC)", angle: 112, narrowAngle: 108, ring: 2, parent: "certifications", href: "/experience/#cert-ictc" },
 ];
 
 // `aspect` is the canvas width / height, so the SVG can share its proportions
@@ -50,6 +46,31 @@ const layouts: Record<"wide" | "narrow", Layout> = {
   wide: { sx: 0.8, sy: 0.92, r1: 26, r2: 44, aspect: 1 },
   narrow: { sx: 0.56, sy: 0.92, r1: 25, r2: 44, aspect: 2 / 3 },
 };
+
+// Certificate categories become leaves of the Certifications hub, on slots
+// checked for clearance at every width (desktop angle, phone angle). Four fit.
+const CERT_SLOTS: [number, number][] = [
+  [160, 160],
+  [144, 146],
+  [128, 130],
+  [112, 108],
+];
+
+export type MapCategory = { id: string; label: string; short: string };
+
+function buildNodes(categories: MapCategory[]): MapNode[] {
+  const leaves = categories.slice(0, CERT_SLOTS.length).map((c, i) => ({
+    id: `cert-${c.id}`,
+    label: c.label,
+    narrowLabel: c.short,
+    angle: CERT_SLOTS[i][0],
+    narrowAngle: CERT_SLOTS[i][1],
+    ring: 2 as const,
+    parent: "certifications",
+    href: `/experience/#certs-${c.id}`,
+  }));
+  return [...baseNodes, ...leaves];
+}
 
 const CENTER = { x: 50, y: 50 };
 
@@ -69,7 +90,17 @@ const HUB_EDGE = 150;
 const LEAF_EDGE = 800;
 const EDGE_MS = 700;
 
-function Canvas({ layout, active, setActive }: { layout: Layout; active: string | null; setActive: (id: string | null) => void }) {
+function Canvas({
+  nodes,
+  layout,
+  active,
+  setActive,
+}: {
+  nodes: MapNode[];
+  layout: Layout;
+  active: string | null;
+  setActive: (id: string | null) => void;
+}) {
   const pos = Object.fromEntries(nodes.map((n) => [n.id, position(n, layout)]));
   const chain = new Set<string>();
   if (active) {
@@ -191,17 +222,18 @@ function Canvas({ layout, active, setActive }: { layout: Layout; active: string 
   );
 }
 
-export default function TopologyMap() {
+export default function TopologyMap({ certCategories }: { certCategories: MapCategory[] }) {
+  const nodes = buildNodes(certCategories);
   const [active, setActive] = useState<string | null>(null);
   return (
     <nav aria-label="Site map" className="relative">
       <div className="relative mx-auto hidden aspect-square w-[90%] max-w-[42rem] md:block">
         <div aria-hidden="true" className="dot-grid dot-grid-fade absolute inset-0" />
-        <Canvas layout={layouts.wide} active={active} setActive={setActive} />
+        <Canvas nodes={nodes} layout={layouts.wide} active={active} setActive={setActive} />
       </div>
       <div className="relative mx-auto aspect-[2/3] w-full md:hidden">
         <div aria-hidden="true" className="dot-grid dot-grid-fade absolute inset-0" />
-        <Canvas layout={layouts.narrow} active={active} setActive={setActive} />
+        <Canvas nodes={nodes} layout={layouts.narrow} active={active} setActive={setActive} />
       </div>
     </nav>
   );
