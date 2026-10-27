@@ -47,7 +47,7 @@ export default function PsellsDiagram() {
 
       {/* Home network */}
       <Frame x={10} y={444} w={860} h={128} label="At home, private network only" dashed />
-      <Box x={28} y={484} w={140} title="Phones" sub="household devices" />
+      <Box x={28} y={484} w={140} title="Phones" sub="personal devices" />
       <Box x={200} y={484} w={140} title="Tailscale" sub="members only" />
       <Box x={372} y={484} w={170} title="Mac" sub="app, PostgreSQL, launchd" />
       <Box x={574} y={484} w={120} title="Hourly ETL" sub="pandas" />

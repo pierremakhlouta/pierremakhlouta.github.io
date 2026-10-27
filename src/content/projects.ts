@@ -278,12 +278,12 @@ export const psells: Project = {
 export const evenly: Project = {
   slug: "evenly",
   name: "Evenly",
-  tagline: "Shared expense tracker for household bills, expenses and payments",
+  tagline: "Shared expense tracker for households and groups of friends",
   summary:
     "An installable mobile web app for bills, expenses and payments, used daily by real users. The database is the security boundary: the browser cannot read a single table, and every write goes through an allowlist of functions.",
   stack: ["TypeScript", "Vite", "PWA", "Supabase", "PostgreSQL", "PL/pgSQL", "Deno Edge Functions", "GitHub Actions", "Vitest", "pgTAP", "Playwright"],
   repo: { label: "Source on GitHub", href: "https://github.com/pierremakhlouta/evenly" },
-  // No live link: the production app holds real household data and has no
+  // No live link: the production app holds private user data and has no
   // public demo group, so it can't be opened by visitors.
   access: "There's no public demo because the live application contains private household data. The screenshots use seed data.",
   closing: "The source and DECISIONS.md, with every design decision and the alternatives considered, are on GitHub.",
@@ -291,7 +291,7 @@ export const evenly: Project = {
     {
       src: evenlyHome,
       frame: "phone",
-      alt: "Evenly home screen showing what the other household owes, shortcuts for monthly bills, Add expense and Record payment buttons, and recent entries.",
+      alt: "Evenly home screen showing the balance owed, shortcuts for monthly bills, Add expense and Record payment buttons, and recent entries.",
       caption: "Home: the balance, bill shortcuts and recent entries.",
     },
     {
@@ -304,11 +304,11 @@ export const evenly: Project = {
   overview: [
     {
       label: "The problem",
-      body: "The two households in my house shared bills through a note and a Google Sheet. Evenly replaced both.",
+      body: "Shared costs between people who live or spend together, like a household or a group of friends, are easy to lose track of in notes and spreadsheets. Evenly keeps one shared, always-current record.",
     },
     {
       label: "Who uses it",
-      body: "Both households, every day. I built it alone and owned the product, architecture, security model, testing and deployment.",
+      body: "Real users, every day. I built it alone and owned the product, architecture, security model, testing and deployment.",
     },
     {
       label: "What it does",
@@ -316,7 +316,7 @@ export const evenly: Project = {
     },
   ],
   features: [
-    "Two modes on one engine: two households with one shared balance, or any number of people, Splitwise-style",
+    "Two modes on one engine: two parties sharing one running balance, or any number of people, Splitwise-style",
     "Splits by share, fixed amount, fraction, percentage or weights",
     "Monthly bills added automatically",
     "Soft deletes with restore, and an append-only change log for every edit",
@@ -381,9 +381,9 @@ export const evenly: Project = {
     {
       id: "debt-simplification",
       heading: "Splitting and debt simplification",
-      summary: "One engine for two households or a whole group.",
+      summary: "One engine for two parties or a whole group.",
       points: [
-        "Two modes share one engine: two households with one shared balance, or any number of people splitting by share, fixed amount, fraction, percentage or weights.",
+        "Two modes share one engine: two parties with one running balance (for example, two households splitting bills), or any number of people splitting by share, fixed amount, fraction, percentage or weights.",
         "Debt simplification settles N people in at most N − 1 payments.",
         "Monthly bills are added automatically each day by an idempotent pg_cron job.",
       ],
