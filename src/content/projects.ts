@@ -463,11 +463,9 @@ export const macrolift: Project = {
     "A phone-first web app with a private account for each user, built end to end on free tiers. Workouts autosave on the device and sync without double-counting, and Row Level Security guards every table.",
   stack: ["Next.js 16", "React", "TypeScript", "Tailwind CSS 4", "Supabase", "PostgreSQL", "Vercel", "Zod", "TanStack Query", "Vitest", "Playwright", "pgTAP", "axe-core"],
   repo: { label: "Source on GitHub", href: "https://github.com/pierremakhlouta/MacroLift" },
-  live: {
-    label: "Live app",
-    href: "https://macro-lift-nine.vercel.app",
-    note: "In personal testing before a private beta",
-  },
+  // No live link: the app needs an account and is in personal testing, so
+  // visitors would only reach a sign-up page.
+  access: "No public demo while it's in personal testing before a private beta. The screenshots use invented sample data.",
   closing: "The source, the deployment notes and the private-beta checklist are on GitHub.",
   hero: [
     {
