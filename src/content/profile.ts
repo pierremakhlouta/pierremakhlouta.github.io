@@ -28,7 +28,7 @@ export type Place = (typeof places)[number];
 
 // `where` is the same information the earlier free-text "used in" labels
 // held; `note` keeps any detail those labels carried.
-export type SkillGroup = { name: string; items: string[]; where: Place[]; note?: string };
+export type SkillGroup = { name: string; items: string[]; where: Place[]; note?: string; short?: string };
 
 // Anchor id for a skill group's row on /skills/ (e.g. "Infrastructure as code" -> "infrastructure-as-code").
 export const skillId = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -39,36 +39,36 @@ export const skills: SkillGroup[] = [
     items: ["AWS EC2", "S3", "IAM", "Systems Manager", "Parameter Store", "RDS", "Application Load Balancer"],
     where: ["PSells"],
   },
-  { name: "Infrastructure as code", items: ["Terraform"], where: ["PSells"], note: "AWS and Grafana Cloud" },
+  { name: "Infrastructure as code", short: "IaC", items: ["Terraform"], where: ["PSells"], note: "AWS and Grafana Cloud" },
   {
-    name: "Containers and orchestration",
+    name: "Containers and orchestration", short: "Containers",
     items: ["Docker", "Docker Compose", "Kubernetes (kind, kustomize)", "GHCR"],
     where: ["PSells"],
   },
   { name: "CI/CD", items: ["GitHub Actions", "GitHub Pages"], where: ["PSells", "Evenly"] },
   {
-    name: "Monitoring and reliability",
+    name: "Monitoring and reliability", short: "Monitoring",
     items: ["Grafana Cloud", "SLOs and alerting", "Tested backups", "Postmortems", "Runbooks"],
     where: ["PSells"],
   },
   {
-    name: "Linux and systems",
+    name: "Linux and systems", short: "Linux",
     items: ["Linux", "nginx", "macOS launchd", "Tailscale"],
     where: ["PSells", "Coursework"],
     note: "LFCA coursework",
   },
   {
-    name: "Scripting and languages",
+    name: "Scripting and languages", short: "Languages",
     items: ["Bash", "Python", "PowerShell", "TypeScript", "SQL", "PL/pgSQL", "C", "Java"],
     where: ["PSells", "Evenly", "MacroLift", "Coursework"],
   },
   {
-    name: "Databases and data",
+    name: "Databases and data", short: "Databases",
     items: ["PostgreSQL", "SQLite", "Supabase (PostgreSQL, Auth)", "pg_cron", "Star-schema warehousing", "ETL", "pandas", "Excel Power Query", "Power BI"],
     where: ["PSells", "Evenly", "MacroLift", "S&C Electric"],
   },
   {
-    name: "Microsoft 365 administration",
+    name: "Microsoft 365 administration", short: "Microsoft 365",
     items: ["Microsoft 365", "Exchange", "SharePoint", "Teams", "Entra ID", "Conditional Access", "Privileged Identity Management", "Microsoft Purview (DLP, sensitivity labels)", "Power Platform"],
     where: ["Coursework"],
     note: "Microsoft 365 and Agent Administration AB-900 coursework",
@@ -84,7 +84,7 @@ export const skills: SkillGroup[] = [
     where: ["PSells", "Evenly", "MacroLift"],
   },
   {
-    name: "Web and backend",
+    name: "Web and backend", short: "Web",
     items: ["Next.js (App Router)", "React", "Tailwind CSS", "TanStack Query", "Zod", "FastAPI", "Jinja2", "Vite", "Progressive Web Apps", "Deno Edge Functions", "Vercel"],
     where: ["PSells", "Evenly", "MacroLift"],
   },

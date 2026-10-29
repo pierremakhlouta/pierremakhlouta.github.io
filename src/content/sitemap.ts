@@ -63,7 +63,7 @@ export function buildMapHubs(resumeHref: string | null): MapHub[] {
       href: "/skills/",
       hrefLabel: "All skills",
       angle: 30,
-      items: skills.map((g) => ({ label: g.name, href: `/skills/#${skillId(g.name)}` })),
+      items: skills.map((g) => ({ label: g.name, short: g.short, href: `/skills/#${skillId(g.name)}` })),
     },
     {
       id: "contact",

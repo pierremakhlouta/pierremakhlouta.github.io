@@ -42,7 +42,7 @@ export default function Home() {
 
           <figure>
             <figcaption className="mb-2 text-center text-sm text-muted">
-              A map of this site. Select a section to see what&apos;s in it.
+              A map of this site. Select a section to explore it.
             </figcaption>
             <TopologyMap hubs={buildMapHubs(person.resume ? publicPath(person.resume) : null)} />
           </figure>

@@ -1,27 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState } from "react";
-import type { MapHub } from "@/content/sitemap";
+import { useState } from "react";
+import type { MapHub, MapItem } from "@/content/sitemap";
 
 // The homepage map: Pierre at the centre and the site's sections as hubs. Only
-// one hub is open at a time. Its items fan out as small unlabelled nodes and are
-// listed, with labels, in the panel below, so no text can collide however much
-// content there is. Hovering an item in the panel lights its node.
+// one hub is open at a time; its items branch out from it as labelled leaves,
+// stacked in a column (side hubs) or a row (top and bottom hubs) so labels line
+// up. Each hub shows a few leaves at most, the last reading "+N more" when there
+// are too many, so the map stays readable however much content is added.
 // Everything here is a fact from the rest of the site; nothing is a live metric.
 
 // `aspect` is the canvas width / height, so the SVG can share its proportions
 // and keep strokes uniform without non-scaling-stroke (which breaks dashes).
-// `spread` is the angle between item nodes; `maxFan` caps the whole fan, so a
-// hub with many items packs them closer instead of reaching its neighbours.
-type Layout = { sx: number; sy: number; r1: number; r2: number; aspect: number; spread: number; maxFan: number; maxLeaves: number };
-const layouts: Record<"wide" | "narrow", Layout> = {
-  wide: { sx: 0.8, sy: 0.92, r1: 26, r2: 42, aspect: 1, spread: 8, maxFan: 56, maxLeaves: 8 },
-  narrow: { sx: 0.58, sy: 0.92, r1: 25, r2: 42, aspect: 5 / 6, spread: 10, maxFan: 48, maxLeaves: 6 },
+// Leaves of a side hub stack in a vertical branch `colGap` apart, growing away
+// from the middle of the map (up from upper hubs, down from lower ones) and
+// nudged `colDx` outward; leaves of the top and bottom hubs sit in a row
+// `rowDy` away, `rowGap` apart. All distances are percentages of the canvas.
+type Layout = {
+  sx: number;
+  sy: number;
+  r1: number;
+  aspect: number;
+  colDx: number;
+  colGap: number;
+  rowDy: number;
+  rowGap: number;
+  rowSpan: number;
+  maxLeaves: number;
 };
-
-// `maxLeaves`: at most this many item nodes are drawn around the open hub; the
-// panel always lists every item.
+const layouts: Record<"wide" | "narrow", Layout> = {
+  wide: { sx: 0.8, sy: 0.92, r1: 26, aspect: 1, colDx: 3, colGap: 8, rowDy: 14, rowGap: 28, rowSpan: 64, maxLeaves: 4 },
+  narrow: { sx: 0.58, sy: 0.92, r1: 25, aspect: 5 / 6, colDx: 3, colGap: 9.5, rowDy: 13, rowGap: 40, rowSpan: 56, maxLeaves: 4 },
+};
 
 const CENTER = { x: 50, y: 50 };
 
@@ -35,14 +46,35 @@ function polar(angle: number, r: number, l: Layout) {
   return { x: round(CENTER.x + r * Math.cos(a) * l.sx), y: round(CENTER.y + r * Math.sin(a) * l.sy) };
 }
 
-// Side hubs carry their label beside the dot, on the outer side, so their items
-// fan out rotated toward the vertical, away from it; top and bottom hubs fan
-// straight outward.
-function fanCenter(angle: number) {
+type Side = "left" | "right" | "top" | "bottom";
+
+function sideOf(angle: number): Side {
   const r = (angle * Math.PI) / 180;
-  if (Math.abs(Math.cos(r)) < 0.2) return angle;
-  const vertical = Math.sin(r) < 0 ? -90 : 90;
-  return angle + 25 * Math.sign(vertical - angle);
+  if (Math.abs(Math.cos(r)) < 0.2) return Math.sin(r) < 0 ? "top" : "bottom";
+  return Math.cos(r) < 0 ? "left" : "right";
+}
+
+// Leaf positions: a vertical branch from a side hub, starting just past the
+// hub's own label, or a row beyond the top or bottom hub, so labels line up and
+// can't run into each other.
+function leafPositions(hubPos: { x: number; y: number }, side: Side, n: number, l: Layout) {
+  return Array.from({ length: n }, (_, i) => {
+    if (side === "left" || side === "right") {
+      const away = hubPos.y < CENTER.y ? -1 : 1;
+      return { x: round(hubPos.x + (side === "left" ? -l.colDx : l.colDx)), y: round(hubPos.y + away * (i + 0.85) * l.colGap) };
+    }
+    const offset = i - (n - 1) / 2;
+    const gap = n > 1 ? Math.min(l.rowGap, l.rowSpan / (n - 1)) : 0;
+    return { x: round(hubPos.x + offset * gap), y: round(hubPos.y + (side === "top" ? -l.rowDy : l.rowDy)) };
+  });
+}
+
+// The leaves drawn for a hub: its items, or the first few plus a "+N more" leaf
+// that opens the hub's page.
+function leavesFor(hub: MapHub, max: number): MapItem[] {
+  if (hub.items.length <= max) return hub.items;
+  const shown = hub.items.slice(0, max - 1);
+  return [...shown, { label: `+${hub.items.length - shown.length} more`, href: hub.href }];
 }
 
 // Load sequence: centre, then hubs, then the open hub's leaves.
@@ -55,23 +87,22 @@ type CanvasProps = {
   layout: Layout;
   open: string;
   highlight: string | null;
-  litItem: number | null;
   firstRender: boolean;
-  panelId: string;
   onPreview: (id: string | null) => void;
   onSelect: (id: string) => void;
 };
 
-function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, onPreview, onSelect }: CanvasProps) {
+function Canvas({ hubs, layout, open, highlight, firstRender, onPreview, onSelect }: CanvasProps) {
+  const narrow = layout === layouts.narrow;
   const vh = 100 / layout.aspect;
   const sy = (y: number) => round((y * vh) / 100);
   const hub = hubs.find((h) => h.id === open) ?? hubs[0];
   const hubPos = polar(hub.angle, layout.r1, layout);
-  const leaves = hub.items.slice(0, layout.maxLeaves);
-  const center = fanCenter(hub.angle);
-  const step = leaves.length > 1 ? Math.min(layout.spread, layout.maxFan / (leaves.length - 1)) : 0;
-  const leafPos = leaves.map((_, i) => polar(center + (i - (leaves.length - 1) / 2) * step, layout.r2, layout));
+  const leaves = leavesFor(hub, layout.maxLeaves);
+  const side = sideOf(hub.angle);
+  const leafPos = leafPositions(hubPos, side, leaves.length, layout);
   const leafDelay = firstRender ? LEAF_EDGE : 0;
+  const leafGroup = `map-${hub.id}-${narrow ? "narrow" : "wide"}`;
 
   return (
     <>
@@ -79,10 +110,15 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
         {hubs.map((h) => {
           const p = polar(h.angle, layout.r1, layout);
           const d = `M${CENTER.x} ${sy(CENTER.y)} L${p.x} ${sy(p.y)}`;
-          const on = h.id === open || h.id === highlight;
           return (
             <g key={h.id}>
-              <path d={d} pathLength={1} className="map-edge" data-active={on ? "" : undefined} style={{ "--d": `${HUB_EDGE}ms` } as React.CSSProperties} />
+              <path
+                d={d}
+                pathLength={1}
+                className="map-edge"
+                data-active={h.id === open || h.id === highlight ? "" : undefined}
+                style={{ "--d": `${HUB_EDGE}ms` } as React.CSSProperties}
+              />
               <path d={d} pathLength={1} className="map-signal" data-active={h.id === highlight ? "" : undefined} />
             </g>
           );
@@ -95,17 +131,7 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
               d={`M${hubPos.x} ${sy(hubPos.y)} L${p.x} ${sy(p.y)}`}
               pathLength={1}
               className="map-edge"
-              data-active=""
               style={{ "--d": `${leafDelay}ms` } as React.CSSProperties}
-            />
-          ))}
-          {leafPos.map((p, i) => (
-            <path
-              key={`s-${i}`}
-              d={`M${hubPos.x} ${sy(hubPos.y)} L${p.x} ${sy(p.y)}`}
-              pathLength={1}
-              className="map-signal"
-              data-active={litItem === i ? "" : undefined}
             />
           ))}
         </g>
@@ -124,15 +150,13 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
         const p = polar(h.angle, layout.r1, layout);
         const isOpen = h.id === open;
         const lit = isOpen || h.id === highlight;
-        const left = p.x < CENTER.x - 1;
-        const below = h.angle > 60 && h.angle < 120;
-        const top = h.angle < -60 && h.angle > -120;
+        const hSide = sideOf(h.angle);
         return (
           <button
             key={h.id}
             type="button"
             aria-expanded={isOpen}
-            aria-controls={panelId}
+            aria-controls={isOpen ? leafGroup : undefined}
             onClick={() => onSelect(h.id)}
             onPointerEnter={() => onPreview(h.id)}
             onPointerLeave={() => onPreview(null)}
@@ -149,11 +173,16 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
             />
             <span
               className={`absolute whitespace-nowrap text-base font-semibold md:text-lg ${
-                below
-                  ? "left-1/2 top-full mt-1.5 -translate-x-1/2"
-                  : top
-                    ? "left-full top-1/2 ml-2.5 -translate-y-1/2"
-                    : `top-1/2 -translate-y-1/2 ${left ? "right-full mr-2.5 text-right" : "left-full ml-2.5"}`
+                // Top and bottom labels sit above and below their dots, clear of the
+                // side hubs' branches, and move beside the dot when that hub's own
+                // row of leaves opens in their place.
+                isOpen && (hSide === "top" || hSide === "bottom")
+                  ? "left-full top-1/2 ml-2.5 -translate-y-1/2"
+                  : hSide === "top"
+                    ? "bottom-full left-1/2 mb-1.5 -translate-x-1/2"
+                    : hSide === "bottom"
+                      ? "left-1/2 top-full mt-1.5 -translate-x-1/2"
+                      : `top-1/2 -translate-y-1/2 ${hSide === "left" ? "right-full mr-2.5 text-right" : "left-full ml-2.5"}`
               } ${lit ? "text-accent" : "text-ink"} decoration-accent decoration-2 underline-offset-4 group-hover:underline group-focus-visible:underline`}
             >
               {h.label}
@@ -163,22 +192,60 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
         );
       })}
 
-      {/* The open hub's items as small nodes; their labels are in the panel. */}
-      <div key={hub.id} aria-hidden="true">
-        {leafPos.map((p, i) => (
-          <span
-            key={i}
-            className="map-node absolute"
-            style={{ left: `${p.x}%`, top: `${p.y}%`, "--d": `${leafDelay + EDGE_MS - 150}ms` } as React.CSSProperties}
-          >
-            <span
-              className={`block size-2.5 rounded-full border-[1.5px] border-accent shadow-[0_0_0_3px_var(--paper)] transition-colors ${
-                litItem === i ? "bg-accent" : "bg-paper"
-              }`}
-            />
-          </span>
-        ))}
-      </div>
+      {/* The open hub's leaves, each a link with its label at the end. */}
+      <ul key={hub.id} id={leafGroup} aria-label={hub.label}>
+        {leaves.map((item, i) => {
+          const p = leafPos[i];
+          const rowPart = i - (leaves.length - 1) / 2;
+          const label = narrow && item.short ? item.short : item.label;
+          const className = "map-node group absolute rounded-full outline-offset-4";
+          const style = { left: `${p.x}%`, top: `${p.y}%`, "--d": `${leafDelay + EDGE_MS - 150}ms` } as React.CSSProperties;
+          const content = (
+            <>
+              <span aria-hidden="true" className="block size-2.5 rounded-full border-[1.5px] border-accent bg-paper shadow-[0_0_0_3px_var(--paper)] transition-colors group-hover:bg-accent group-focus-visible:bg-accent" />
+              <span
+                className={`absolute w-max text-sm leading-tight text-muted decoration-accent decoration-2 underline-offset-4 group-hover:text-accent group-hover:underline group-focus-visible:text-accent group-focus-visible:underline ${
+                  narrow ? "max-w-[7rem]" : "max-w-[10rem]"
+                } ${
+                  side === "left"
+                    ? "right-full top-1/2 mr-2.5 -translate-y-1/2 text-right"
+                    : side === "right"
+                      ? "left-full top-1/2 ml-2.5 -translate-y-1/2"
+                      : // Rows: labels to the outer side on wide screens; stacked
+                        // above or below each leaf on phones, where rows are narrow.
+                        !narrow && rowPart < 0
+                        ? "right-full top-1/2 mr-2.5 -translate-y-1/2 text-right"
+                        : !narrow && rowPart > 0
+                          ? "left-full top-1/2 ml-2.5 -translate-y-1/2"
+                          : side === "top"
+                            ? "bottom-full left-1/2 mb-1.5 -translate-x-1/2 text-center"
+                            : "left-1/2 top-full mt-1.5 -translate-x-1/2 text-center"
+                }`}
+              >
+                {label}
+              </span>
+            </>
+          );
+          return (
+            <li key={item.href + item.label}>
+              {item.external ? (
+                <a
+                  href={item.href}
+                  className={className}
+                  style={style}
+                  {...(item.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {content}
+                </a>
+              ) : (
+                <Link href={item.href} className={className} style={style}>
+                  {content}
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </>
   );
 }
@@ -186,18 +253,11 @@ function Canvas({ hubs, layout, open, highlight, litItem, firstRender, panelId, 
 export default function TopologyMap({ hubs }: { hubs: MapHub[] }) {
   const [open, setOpen] = useState(hubs[0]?.id ?? "");
   const [highlight, setHighlight] = useState<string | null>(null);
-  const [litItem, setLitItem] = useState<number | null>(null);
   const [firstRender, setFirstRender] = useState(true);
-  const panelId = useId();
-  const hub = hubs.find((h) => h.id === open) ?? hubs[0];
 
   const select = (id: string) => {
     setFirstRender(false);
-    setLitItem(null);
     setOpen(id);
-  };
-  const preview = (id: string | null) => {
-    setHighlight(id);
   };
   const canvas = (layout: Layout) => (
     <Canvas
@@ -205,10 +265,8 @@ export default function TopologyMap({ hubs }: { hubs: MapHub[] }) {
       layout={layout}
       open={open}
       highlight={highlight}
-      litItem={litItem}
       firstRender={firstRender}
-      panelId={panelId}
-      onPreview={preview}
+      onPreview={setHighlight}
       onSelect={select}
     />
   );
@@ -223,39 +281,6 @@ export default function TopologyMap({ hubs }: { hubs: MapHub[] }) {
         <div aria-hidden="true" className="dot-grid dot-grid-fade absolute inset-0" />
         {canvas(layouts.narrow)}
       </div>
-
-      {/* Everything in the open hub, as a plain list. */}
-      <section id={panelId} aria-live="polite" aria-labelledby={`${panelId}-title`} className="mx-auto mt-4 max-w-[34rem] border-t border-rule pt-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h2 id={`${panelId}-title`} className="text-lg font-semibold tracking-tight">
-            {hub.label}
-          </h2>
-          <Link href={hub.href} className="link text-sm">
-            {hub.hrefLabel}
-          </Link>
-        </div>
-        <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5">
-          {hub.items.map((item, i) => (
-            <li
-              key={item.href + item.label}
-              onPointerEnter={() => setLitItem(i)}
-              onPointerLeave={() => setLitItem(null)}
-              onFocus={() => setLitItem(i)}
-              onBlur={() => setLitItem(null)}
-            >
-              {item.external ? (
-                <a href={item.href} className="link text-[0.9375rem]" {...(item.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-                  {item.label}
-                </a>
-              ) : (
-                <Link href={item.href} className="link text-[0.9375rem]">
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
     </nav>
   );
 }
