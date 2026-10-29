@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Container, Section, Terminus } from "@/components/layout";
+import { Container, Section, Terminus, publicPath } from "@/components/layout";
 import Attention from "@/components/Attention";
 import TopologyMap from "@/components/TopologyMap";
-import { certGroups, person, principles } from "@/content/profile";
+import { person, principles } from "@/content/profile";
+import { buildMapHubs } from "@/content/sitemap";
 
 export default function Home() {
   return (
@@ -40,10 +41,10 @@ export default function Home() {
           </div>
 
           <figure>
-            <TopologyMap certCategories={certGroups.map((g) => ({ id: g.id, label: g.label, short: g.mapShort }))} />
-            <figcaption className="mt-4 text-center text-sm text-muted">
-              A map of this site. Select a node to open that page.
+            <figcaption className="mb-2 text-center text-sm text-muted">
+              A map of this site. Select a section to see what&apos;s in it.
             </figcaption>
+            <TopologyMap hubs={buildMapHubs(person.resume ? publicPath(person.resume) : null)} />
           </figure>
         </div>
       </Container>
