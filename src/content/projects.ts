@@ -1,4 +1,4 @@
-// Case-study content for the two projects. Every fact comes from
+// Case-study content for the projects. Every fact comes from
 // master_profile.md or the projects' own public READMEs. Do not add projects,
 // metrics or features that are not there.
 //
@@ -6,6 +6,8 @@
 // - PSells images were captured from the public demo, which holds invented
 //   records only. Screens that show the partner's cut are deliberately left out.
 // - Evenly images are the README screenshots from its repo, made from seed data.
+// - MacroLift images were captured from a local copy of the app (local database
+//   only) signed in as an invented sample user with invented data.
 
 import type { StaticImageData } from "next/image";
 
@@ -14,6 +16,12 @@ import evenlyEntryDetails from "@/assets/evenly/entry-details.webp";
 import evenlyHistory from "@/assets/evenly/history.webp";
 import evenlyHome from "@/assets/evenly/home.webp";
 import evenlySettleDark from "@/assets/evenly/settle-up-dark.webp";
+import macroliftActiveWorkout from "@/assets/macrolift/active-workout.webp";
+import macroliftDashboard from "@/assets/macrolift/dashboard.webp";
+import macroliftNutrition from "@/assets/macrolift/nutrition.webp";
+import macroliftProgress from "@/assets/macrolift/progress.webp";
+import macroliftTargets from "@/assets/macrolift/targets.webp";
+import macroliftWorkoutSummary from "@/assets/macrolift/workout-summary.webp";
 import psellsAnalyticsCategories from "@/assets/psells/analytics-categories.webp";
 import psellsAnalyticsOverview from "@/assets/psells/analytics-overview.webp";
 import psellsHome from "@/assets/psells/home.webp";
@@ -49,7 +57,7 @@ export type DetailSection = {
 };
 
 export type Project = {
-  slug: "psells" | "evenly";
+  slug: "psells" | "evenly" | "macrolift";
   name: string;
   tagline: string;
   summary: string;
@@ -445,7 +453,175 @@ export const evenly: Project = {
   ],
 };
 
-export const projects: Project[] = [psells, evenly];
+// Never claim MacroLift has users: it is live but in personal testing before a
+// small private beta.
+export const macrolift: Project = {
+  slug: "macrolift",
+  name: "MacroLift",
+  tagline: "Fitness and nutrition tracker for workouts, meals and body measurements",
+  summary:
+    "A phone-first web app with a private account for each user, built end to end on free tiers. Workouts autosave on the device and sync without double-counting, and Row Level Security guards every table.",
+  stack: ["Next.js 16", "React", "TypeScript", "Tailwind CSS 4", "Supabase", "PostgreSQL", "Vercel", "Zod", "TanStack Query", "Vitest", "Playwright", "pgTAP", "axe-core"],
+  repo: { label: "Source on GitHub", href: "https://github.com/pierremakhlouta/MacroLift" },
+  live: {
+    label: "Live app",
+    href: "https://macro-lift-nine.vercel.app",
+    note: "In personal testing before a private beta",
+  },
+  closing: "The source, the deployment notes and the private-beta checklist are on GitHub.",
+  hero: [
+    {
+      src: macroliftDashboard,
+      frame: "phone",
+      alt: "MacroLift dashboard showing a workout in progress, today's calories and macros against the target, and the latest weigh-in.",
+      caption: "Dashboard: the workout in progress, today's nutrition and recent progress.",
+    },
+    {
+      src: macroliftActiveWorkout,
+      frame: "phone",
+      alt: "MacroLift active workout from a Leg Day routine, with barbell back squat sets logged as weight and reps against a target of 4 by 5, and a Saved status.",
+      caption: "An active workout started from a routine, autosaved as sets are logged.",
+    },
+  ],
+  overview: [
+    {
+      label: "The problem",
+      body: "Training, food and body weight usually live in separate apps. MacroLift keeps them together, and keeps the numbers honest: a nutrient that isn't known is never counted as zero.",
+    },
+    {
+      label: "Where it stands",
+      body: "Live, in personal testing before a small private beta. A solo project: I designed and built the database, security, interface, testing and deployment.",
+    },
+    {
+      label: "What it does",
+      body: "Logs strength and cardio workouts, keeps a meal-by-meal food diary, tracks targets, weigh-ins and measurements, and installs on a phone's home screen.",
+    },
+  ],
+  features: [
+    "81 built-in exercises plus custom ones, with live search, and routines with target sets and reps",
+    "Strength sets logged as weight × reps, cardio as distance and time",
+    "Workouts that autosave on the device and survive dropped connections and closed tabs",
+    "Meal-by-meal nutrition diary with saved foods, saved meals and USDA food search",
+    "Calorie and macro targets that start on a chosen date",
+    "Weigh-ins and body measurements with an accessible trend chart",
+  ],
+  results: [
+    { value: "~450", label: "automated tests across unit, integration, database and end-to-end" },
+    { value: "207", label: "pgTAP database tests, including cross-account isolation" },
+    { value: "81", label: "built-in exercises, plus each user's own" },
+    { value: "3", label: "screen widths checked for WCAG 2.2 AA on every run" },
+  ],
+  gallery: [
+    {
+      src: macroliftNutrition,
+      frame: "phone",
+      alt: "MacroLift nutrition diary for the day with calories and protein, carbs, fat and fiber against targets, where fiber is marked as a partial total.",
+      caption: "Nutrition: totals against targets. A ≥ marks a total that includes unknown values.",
+    },
+    {
+      src: macroliftProgress,
+      frame: "phone",
+      alt: "MacroLift progress page with a weigh-in form and a body weight trend chart over 90 days.",
+      caption: "Progress: weigh-ins and a trend chart that also works by keyboard and as a table.",
+    },
+    {
+      src: macroliftWorkoutSummary,
+      frame: "phone",
+      alt: "MacroLift workout summary showing duration, sets, reps and volume, with bench press sets listed by weight and reps.",
+      caption: "Workout summary: volume counts weighted sets, and bodyweight sets are reported separately.",
+    },
+    {
+      src: macroliftTargets,
+      frame: "phone",
+      alt: "MacroLift targets page with a dated calorie and macro target in effect and a maintenance calorie estimate shown for reference only.",
+      caption: "Targets, plus a maintenance estimate that shows its working and never sets a target.",
+    },
+  ],
+  sections: [
+    {
+      id: "sync",
+      heading: "Offline-tolerant sync",
+      summary: "A workout survives a dropped connection, a closed tab and a second device.",
+      points: [
+        "Active workouts autosave on the device first, so nothing is lost when the connection drops or the tab closes, and the workout resumes where it left off.",
+        "Changes sync through a PostgreSQL function with revision numbers, so a re-sent upload is never applied twice.",
+        "When two devices change the same workout, the clash is shown to the user instead of one silently overwriting the other.",
+      ],
+    },
+    {
+      id: "security",
+      heading: "Security and data integrity",
+      summary: "The database is the security boundary.",
+      points: [
+        "Row Level Security on every table limits each row to its owner, and child tables also check the parent's owner through composite foreign keys. Cross-account isolation is tested.",
+        "The browser uses only the publishable key, and multi-row writes go through functions that run with the user's own permissions, so Row Level Security still applies. No secrets reach the browser, and every page sends security headers.",
+        "Deleting an account removes all of that user's data.",
+        "Entries store a copy of their values, so editing an exercise, routine or food never rewrites past records.",
+      ],
+    },
+    {
+      id: "nutrition",
+      heading: "Nutrition and targets",
+      summary: "Totals that say what they don't know.",
+      points: [
+        "A meal-by-meal diary with saved foods, saved meals and USDA FoodData Central search through a server-side route, so the API key never reaches the browser.",
+        "Unknown nutrients are never counted as zero, and partial totals are marked with ≥.",
+        "Calorie and macro targets start on a chosen date, so past days keep the target that applied at the time.",
+        "A Mifflin–St Jeor maintenance estimate shows every input and step, and is for information only: it never sets a target.",
+      ],
+    },
+    {
+      id: "body",
+      heading: "Workouts and body tracking",
+      summary: "Strength, cardio and measurements in one place.",
+      points: [
+        "81 built-in exercises plus custom ones, with live search, and routines with target sets and reps.",
+        "Strength sets are logged as weight × reps; cardio is logged as distance and time.",
+        "Weigh-ins and body measurements, with a trend chart that also works by keyboard and as a table.",
+        "Metric or imperial units, stored internally in kilograms and centimetres.",
+      ],
+    },
+    {
+      id: "testing",
+      heading: "Testing",
+      summary: "About 450 automated tests, from database rules to real browsers.",
+      points: [
+        "126 unit, 47 integration, 207 pgTAP database and 69 end-to-end tests.",
+        "Integration tests make real API calls as two signed-in users to prove neither can read the other's data.",
+        "End-to-end runs include automated WCAG 2.2 AA accessibility checks at phone, tablet and desktop widths.",
+      ],
+    },
+    {
+      id: "deployment",
+      heading: "Deployment and operations",
+      summary: "Hosted end to end on free tiers.",
+      points: [
+        "Hosting on Vercel, database and auth on Supabase with migrations applied in order, email delivery through Brevo SMTP, and Google sign-in.",
+        "Handled real sign-in edge cases: email scanners that open a link before the user does, and confirmation links opened in a different browser.",
+      ],
+    },
+  ],
+  challenges: [
+    {
+      title: "Uploads that arrive twice",
+      body: "Phones retry requests on weak connections. Revision numbers on every workout change let the database recognise a repeat and apply it only once.",
+    },
+    {
+      title: "Two devices, one workout",
+      body: "Instead of letting the last write win, sync detects a clash between devices and asks the user which version to keep.",
+    },
+    {
+      title: "Unknown is not zero",
+      body: "Many foods are missing some nutrients. Counting those as zero would understate the day, so totals that include unknowns are marked as partial.",
+    },
+    {
+      title: "Sign-in links in the real world",
+      body: "Email security scanners can open a sign-in link before the user does, and people open links in a different browser. Both cases needed handling to make sign-up reliable.",
+    },
+  ],
+};
+
+export const projects: Project[] = [psells, evenly, macrolift];
 
 export function liveLink(project: Project): Link | undefined {
   if (!project.live) return undefined;

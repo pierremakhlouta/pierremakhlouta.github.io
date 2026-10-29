@@ -19,7 +19,8 @@ To preview the production build: `npx serve out` (or `python3 -m http.server -d 
 | Route | Contents |
 | --- | --- |
 | `/` | Introduction, the site as a topology map, what I pay attention to, how I build |
-| `/projects/` | Overview of both projects |
+| `/projects/` | Overview of all projects |
+| `/projects/macrolift/` | MacroLift case study: screenshots, architecture, sync, security, nutrition, workouts, testing, deployment |
 | `/projects/psells/` | PSells case study: screenshots, architecture, AWS/Terraform, CI/CD, deployment, security, reliability, backups, data |
 | `/projects/evenly/` | Evenly case study: screenshots, architecture, database security, correctness, push, migrations, testing, deployment |
 | `/experience/` | Work history, education, certifications, leadership |
@@ -59,6 +60,7 @@ Screenshots live in `src/assets/` as WebP and are imported statically, so Next.j
 | --- | --- |
 | `src/assets/psells/` | Captured from the public demo (invented records only), at 2x and cropped to 1600px wide. Screens showing the partner's cut (Inventory table, Price drops, item Edit) are deliberately left out. |
 | `src/assets/evenly/` | The README screenshots from the Evenly repo (`docs/screenshots/`), made from seed data. |
+| `src/assets/macrolift/` | Captured from a local copy of MacroLift (local Supabase only) signed in as an invented sample user with invented data; the account was deleted afterwards. Never from the live app. |
 | `src/assets/certificates/` | Real certificates only, rendered from the issuers' PDFs: `microsoft-365-ab900.webp`, `google-it-automation.webp` and `lfca-specialization.webp` (Coursera certificate PDFs, each with a Coursera verification link) and `ictc-fit.webp` (a scan of the printed ICTC FIT certificate; ICTC offers no online verification). The PDFs themselves are not published. To add another, render its PDF to a ~1600px WebP here (Quick Look, `qlmanage -t -s 2400`, keeps the page orientation; flatten onto white) and add an entry to `certifications` in `profile.ts`, plus a leaf in `TopologyMap.tsx`. |
 
 **Adding a certificate.** Add an entry to `certifications` in `profile.ts` with its `category` (one of `certCategories`: Cloud, Automation and DevOps, Linux and IT support, Software development). The Experience page groups certificates under those categories (`#certs-<category>` anchors), and the homepage map shows one Certifications leaf per category that holds at least one certificate, linking to its group. Categories with no completed certificate stay hidden, so planned certificates never appear early. The map has four category slots; a fifth category needs a new slot in `CERT_SLOTS` in `TopologyMap.tsx`.

@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const projectLinks = [
   { href: "/projects/psells/", label: "PSells", hint: "Inventory and analytics platform on AWS" },
   { href: "/projects/evenly/", label: "Evenly", hint: "Shared expense tracker, secured in PostgreSQL" },
+  { href: "/projects/macrolift/", label: "MacroLift", hint: "Fitness and nutrition tracker on Next.js and Supabase" },
 ];
 
 const pages = [

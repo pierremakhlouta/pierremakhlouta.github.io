@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 const placeLinks: Partial<Record<Place, string>> = {
   PSells: "/projects/psells/",
   Evenly: "/projects/evenly/",
+  MacroLift: "/projects/macrolift/",
   "S&C Electric": "/experience/#work",
   Coursework: "/experience/#certifications",
 };

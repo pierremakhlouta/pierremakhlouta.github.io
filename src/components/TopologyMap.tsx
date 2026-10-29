@@ -23,7 +23,8 @@ type MapNode = {
 const baseNodes: MapNode[] = [
   { id: "projects", label: "Projects", angle: -150, ring: 1, href: "/projects/" },
   { id: "psells", label: "PSells", angle: -174, ring: 2, parent: "projects", href: "/projects/psells/" },
-  { id: "evenly", label: "Evenly", angle: -128, ring: 2, parent: "projects", href: "/projects/evenly/" },
+  { id: "evenly", label: "Evenly", angle: -124, ring: 2, parent: "projects", href: "/projects/evenly/" },
+  { id: "macrolift", label: "MacroLift", angle: -140, ring: 2, parent: "projects", href: "/projects/macrolift/" },
   { id: "education", label: "Education", angle: -90, ring: 1, href: "/experience/#education" },
   { id: "york", label: "York University", angle: -102, ring: 2, parent: "education", href: "/experience/#york-university" },
   { id: "brebeuf", label: "Brebeuf College School", angle: -78, ring: 2, parent: "education", href: "/experience/#brebeuf" },

@@ -23,7 +23,7 @@ export const person = {
   seeking: "Summer 2027 co-op",
 };
 
-export const places = ["PSells", "Evenly", "S&C Electric", "Coursework"] as const;
+export const places = ["PSells", "Evenly", "MacroLift", "S&C Electric", "Coursework"] as const;
 export type Place = (typeof places)[number];
 
 // `where` is the same information the earlier free-text "used in" labels
@@ -60,12 +60,12 @@ export const skills: SkillGroup[] = [
   {
     name: "Scripting and languages",
     items: ["Bash", "Python", "PowerShell", "TypeScript", "SQL", "PL/pgSQL", "C", "Java"],
-    where: ["PSells", "Evenly", "Coursework"],
+    where: ["PSells", "Evenly", "MacroLift", "Coursework"],
   },
   {
     name: "Databases and data",
-    items: ["PostgreSQL", "SQLite", "Supabase", "pg_cron", "Star-schema warehousing", "ETL", "pandas", "Excel Power Query", "Power BI"],
-    where: ["PSells", "Evenly", "S&C Electric"],
+    items: ["PostgreSQL", "SQLite", "Supabase (PostgreSQL, Auth)", "pg_cron", "Star-schema warehousing", "ETL", "pandas", "Excel Power Query", "Power BI"],
+    where: ["PSells", "Evenly", "MacroLift", "S&C Electric"],
   },
   {
     name: "Microsoft 365 administration",
@@ -76,17 +76,17 @@ export const skills: SkillGroup[] = [
   {
     name: "Security",
     items: ["TLS", "OIDC", "Least-privilege IAM", "Secret scanning", "Container image scanning", "Row Level Security", "Argon2id and bcrypt", "CSRF protection", "Web Crypto API"],
-    where: ["PSells", "Evenly"],
+    where: ["PSells", "Evenly", "MacroLift"],
   },
   {
     name: "Testing",
     items: ["pytest", "Vitest", "pgTAP", "Playwright", "axe-core"],
-    where: ["PSells", "Evenly"],
+    where: ["PSells", "Evenly", "MacroLift"],
   },
   {
     name: "Web and backend",
-    items: ["FastAPI", "Jinja2", "Vite", "Progressive Web Apps", "Deno Edge Functions"],
-    where: ["PSells", "Evenly"],
+    items: ["Next.js (App Router)", "React", "Tailwind CSS", "TanStack Query", "Zod", "FastAPI", "Jinja2", "Vite", "Progressive Web Apps", "Deno Edge Functions", "Vercel"],
+    where: ["PSells", "Evenly", "MacroLift"],
   },
 ];
 

@@ -7,7 +7,7 @@ import { projects, type Project } from "@/content/projects";
 
 export const metadata: Metadata = {
   title: "Projects",
-  description: "PSells and Evenly: two systems with real daily users, each built and run like a production service.",
+  description: "PSells, Evenly and MacroLift: three projects, each built, tested and deployed like a production service.",
 };
 
 // Text always leads on the left so every project's node sits on the trace.
@@ -65,8 +65,8 @@ export default function ProjectsPage() {
     <>
       <PageHeader title="Projects" crumbs={[{ href: "/", label: "Home" }, { label: "Projects" }]}>
         <p className="text-lg md:text-xl">
-          Two systems with real daily users. Each one is built, deployed and run with the habits of a production
-          service.
+          Each one is built, tested and deployed with the habits of a production service, from infrastructure in code
+          to database rules that enforce who can see what.
         </p>
       </PageHeader>
       <Container>
@@ -76,7 +76,7 @@ export default function ProjectsPage() {
       </Container>
       <Terminus>
         <p className="max-w-[40ch] text-xl leading-snug md:text-2xl">
-          Both repositories are public, with their architecture and design decisions written up alongside the code.
+          All three repositories are public, with their architecture and design decisions written up alongside the code.
         </p>
       </Terminus>
     </>
